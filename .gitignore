@@ -1,0 +1,29 @@
+# Entornos virtuales
+env/
+venv/
+ENV/
+.venv/
+
+# Bytecode de Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Archivos de VSCode
+.vscode/
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de salida
+*.log
+*.out
+
+# Archivos de entorno (si usas variables)
+.env
+
+# Modelos grandes / data temporal
+*.pt
+*.pkl
+*.h5
