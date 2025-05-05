@@ -1,7 +1,7 @@
 import threading
 import time
 import random
-
+ 
 class AsignadorRecursos:
     def __init__(self, doctores, camas):
         self.doctor_sem = threading.Semaphore(doctores)
@@ -9,8 +9,6 @@ class AsignadorRecursos:
 
     def asignar(self, id_paciente, prioridad=False):
         print(f"Paciente {id_paciente} esperando recursos...")
-
-        # Aquí ocurre la magia del semáforo:
         with self.doctor_sem, self.cama_sem:
             print(f"Paciente {id_paciente} recibió doctor y cama.")
             tiempo_atencion = random.uniform(1, 2) if prioridad else random.uniform(2, 3)

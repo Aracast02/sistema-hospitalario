@@ -6,7 +6,7 @@ import random
 classifier = pipeline("sentiment-analysis", 
                       model="distilbert-base-uncased-finetuned-sst-2-english")
 
-# Simulación de datos del paciente
+# Datos del paciente
 SAMPLE_SYMPTOMS = [
     # Críticos
     "dificultad respiratoria severa",
@@ -40,21 +40,10 @@ def automated_diagnosis(patient_id):
 
     # Seleccionar síntomas aleatorios
     symptoms = random.choice(SAMPLE_SYMPTOMS)
-
-    # Realizar inferencia con modelo preentrenado
     result = classifier(symptoms)[0]
-
-    # Interpretar resultado como diagnóstico
     diagnosis = "crítico" if result['label'] == 'NEGATIVE' else "estable"
 
-    print(f"Diagnóstico paciente {patient_id}: {diagnosis} (confianza: {result['score']:.2f})")
-
-    return {
-        "patient_id": patient_id,
-        "symptoms": symptoms,
-        "diagnosis": diagnosis,
-        "confidence": result['score']
-    }
+    return diagnosis
 
 def run_parallel_diagnosis(patient_list):
     with multiprocessing.Pool(processes=4) as pool:

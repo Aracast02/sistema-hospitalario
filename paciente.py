@@ -4,9 +4,12 @@ import queue
 import time
 import random
 from Recursos import AsignadorRecursos
-
+from diagnostico import automated_diagnosis
 
 class Paciente(threading.Thread):
+    contador_criticos = 0
+    lock_criticos = threading.Lock()
+
     def __init__(self, id_paciente, cola_registro, cola_diagnostico, cola_criticos, cola_estables, asignador_recursos):
         super().__init__()
         self.id_paciente = id_paciente
@@ -35,24 +38,33 @@ class Paciente(threading.Thread):
 
     def diagnostico_inicial(self):
         print(f"Paciente {self.id_paciente} recibiendo diagnóstico inicial...")
-        self.estado = random.choices(["critico", "estable"], weights=[0.3, 0.7])[0]
+        self.estado = automated_diagnosis(self.id_paciente)
         print(f"Paciente {self.id_paciente} diagnosticado como {self.estado.upper()}.")
-        if self.estado == "critico":
+        if self.estado == "crítico":
             self.cola_criticos.put(self.id_paciente)
         else:
             self.cola_estables.put(self.id_paciente)
 
-    def espera_recursos(self):
+    def espera_recursos(self): 
         if self.estado == "critico":
-            print(f"Paciente {self.id_paciente} (CRÍTICO) esperando recursos prioritarios...")
+            with Paciente.lock_criticos:
+                Paciente.contador_criticos += 1
+
             self.asignador_recursos.asignar(self.id_paciente, prioridad=True)
+
+            with Paciente.lock_criticos:
+                Paciente.contador_criticos -= 1
+
         else:
-            # Esperar hasta que todos los críticos hayan sido atendidos
-            while not self.cola_criticos.empty():
+            while True:
+                with Paciente.lock_criticos:
+                    if Paciente.contador_criticos == 0:
+                        break
                 print(f"Paciente {self.id_paciente} (ESTABLE) esperando porque hay críticos pendientes...")
                 time.sleep(0.5)
-            print(f"Paciente {self.id_paciente} (ESTABLE) esperando recursos...")
+
             self.asignador_recursos.asignar(self.id_paciente, prioridad=False)
+
 
     def seguimiento_alta(self):
         print(f"Paciente {self.id_paciente} en seguimiento y proceso de alta.")
