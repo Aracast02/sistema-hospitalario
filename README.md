@@ -5,10 +5,7 @@ El sistema modela eventos reales como el registro, diagnóstico mediante IA, asi
 
 ## Requisitos
 
-- Python 3.7 o superior
-- Librería 'transformers' de HuggingFace
-- Librería 'torch' (si usas modelos de IA locales)
-- Entorno virtual recomendado ('venv')
+dirigase al archivo requirements.txt para saber más al respecto.
 
 ## Instalación
 
